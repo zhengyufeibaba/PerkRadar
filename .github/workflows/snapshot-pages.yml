@@ -98,10 +98,12 @@ jobs:
         run: npm run snapshot:prepare
       - name: Build the static viewer
         run: npm run build:snapshot
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
         with:
-          path: ${{ runner.temp }}/perkradar-pages
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy ${{ runner.temp }}/perkradar-pages --project-name=perkradar --branch=main --commit-dirty=true
       - name: Keep the next public baseline
         uses: actions/upload-artifact@v4
         with:
@@ -117,16 +119,4 @@ jobs:
           path: reports/live-fetch-summary.json
           if-no-files-found: warn
 
-  deploy:
-    needs: snapshot
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Publish GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+  
