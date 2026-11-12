@@ -2,9 +2,7 @@ name: Snapshot to Pages
 
 on:
   workflow_dispatch:
-  schedule:
-    # GitHub cron 使用 UTC，与应用两小时抓取间隔一致。
-    - cron: '23 */2 * * *'
+
 
 concurrency:
   group: snapshot-pages
